@@ -1,0 +1,31 @@
+version: '3.8'
+services:
+  db:
+    image: diniduij/nwp-postgis:15-3.3
+    container_name: nwp_psql
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: gisadmin
+      POSTGRES_PASSWORD: DigitalDivision
+      POSTGRES_DB: nwpgisdb
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+      - ./docker/postgres/initdb:/docker-entrypoint-initdb.d:ro
+    ports:
+      - "5433:5432"
+  geoserver:
+    image: diniduij/nwp-geoserver:2.24.4
+    container_name: nwp_geoserver
+    restart: unless-stopped
+    environment:
+      GEOSERVER_ADMIN_PASSWORD: geoserver
+    depends_on:
+      - db
+    volumes:
+      - geoserver_data:/var/lib/geoserver
+    ports:
+      - "8181:8080"
+
+volumes:
+  pgdata:
+  geoserver_data:
